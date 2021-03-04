@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31025.194
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyLayoutIndicator", "KeyLayoutIndicator.csproj", "{6B9075E5-8F9F-4D8F-81F7-DE69AE2AC915}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6B9075E5-8F9F-4D8F-81F7-DE69AE2AC915}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B9075E5-8F9F-4D8F-81F7-DE69AE2AC915}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B9075E5-8F9F-4D8F-81F7-DE69AE2AC915}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B9075E5-8F9F-4D8F-81F7-DE69AE2AC915}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {32DA5D7D-72F1-47B7-ADD5-4F82B585E919}
+	EndGlobalSection
+EndGlobal

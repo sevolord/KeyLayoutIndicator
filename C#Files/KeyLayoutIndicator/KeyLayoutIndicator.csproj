@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CDB14333-FDB5-4A77-8B9B-5A7F5F104A9A}</ProjectGuid>
+    <ProjectGuid>{6B9075E5-8F9F-4D8F-81F7-DE69AE2AC915}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>KeyIndicator</RootNamespace>
-    <AssemblyName>KeyIndicator</AssemblyName>
+    <RootNamespace>KeyLayoutIndicator</RootNamespace>
+    <AssemblyName>KeyLayoutIndicator</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -44,19 +44,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\..\..\Projects\KeyLayoutIndicator\C#Files\Form1.cs">
+    <Compile Include="Form1.cs">
       <SubType>Form</SubType>
-      <Link>Form1.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\..\..\Projects\KeyLayoutIndicator\C#Files\Form1.Designer.cs">
+    <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
-      <Link>Form1.Designer.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="..\..\..\..\..\Projects\KeyLayoutIndicator\C#Files\Form1.resx">
+    <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
-      <Link>Form1.resx</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
