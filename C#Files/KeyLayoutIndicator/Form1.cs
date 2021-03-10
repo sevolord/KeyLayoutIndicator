@@ -6,18 +6,26 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.IO.Ports; //подключаем класс ком-порта
+using System.Threading;
+using System.Threading.Tasks; // подключаем для таймера
 using System.Windows.Forms;
 
 namespace KeyLayoutIndicator
 {
     public partial class Form1 : Form
     {
+        bool timerEnable = false;
+        
+
+
         public Form1()
         {
             InitializeComponent();
-            this.Resize += new System.EventHandler(this.Form1_Resize); // добавляем событие на изменение окна
+            // добавляем событие на изменение окна
+            this.Resize += new System.EventHandler(this.Form1_Resize); 
             notifyIcon1.Visible = false;
-            CBComs.Items.Clear();
+
+            //CBComs.Items.Clear(); чистим список COM портов 
             // Получаем список COM портов доступных в системе
             string[] portnames = SerialPort.GetPortNames();
             // Проверяем есть ли доступные
@@ -34,6 +42,40 @@ namespace KeyLayoutIndicator
                 {
                     CBComs.SelectedItem = portnames[0];
                 }
+            }
+            System.Threading.Timer tim2 = new System.Threading.Timer(TimerTick, null, 1000, 500);
+
+
+
+        }
+
+        void TimerTick(object sender)
+        {
+             getLayout();
+            
+        }
+
+
+
+        private void getLayout()
+        {
+            if (!timerEnable) return;
+            InputLanguage myCurrentLanguage = InputLanguage.CurrentInputLanguage;
+            if (myCurrentLanguage != null)
+            {
+
+                String txt = myCurrentLanguage.LayoutName;
+                if (txt == "Русская")
+                {
+                    PortWrite("1");
+                }
+                if (txt == "США")
+                {
+                    PortWrite("3");
+                }
+                lLangStatus.Text = txt;
+
+
             }
         }
 
@@ -57,32 +99,14 @@ namespace KeyLayoutIndicator
 
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            InputLanguage myCurrentLanguage = InputLanguage.CurrentInputLanguage;
-            if (myCurrentLanguage != null)
-            {
-
-                String txt = myCurrentLanguage.LayoutName;
-                if (txt == "Русская")
-                {
-                    PortWrite("1");
-                }
-                if (txt == "США")
-                {
-                    PortWrite("3");
-                }
-                //lLangStatus.Text = txt;
-
-
-            }
-        }
-
+       
         private void button1_Click(object sender, EventArgs e)
         {
+            serialPort1.Close();
             serialPort1.PortName = CBComs.Text;
             serialPort1.Open();
-            timer1.Enabled = true;
+            timerEnable = true;
+            //tm.Start();
         }
 
         private void Form1_Resize(object sender, EventArgs e)
