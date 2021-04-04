@@ -1,54 +1,55 @@
 // права на библиотеки принадлежат их правообладателям.
 // просто меняем цвет светодиода в зависимости от пришедшего значения
 // в простое - переливаемся цветами
-#include "FastLED.h"
+#include "FastLED.h" //подключаем бибилиотеку управления адресной лентой
+// можно было бы и просто светодиодиками поморгать, но я люблю эту ленту
 
-#define NUM_LEDS 1
-#define DATA_PIN 6
+#define NUM_LEDS 1 // определяем кол-во светодиодов
+#define DATA_PIN 6 // определяем пин, к которому подключимся лентой
 
-CRGB leds[NUM_LEDS];
-int val = 0;
-bool connection = false; 
+CRGB leds[NUM_LEDS]; // создаем объект класса управления цветом согласно библеотеке ленты
+int val = 0; // переменная, где будем хранить значение пришедшее из ком-порта
+bool connection = false; // перменная-флаг, где будем отмечать событие, что передавались данные на ардуину. Иначе показываем эффект переливания.
 
 void setup()
 {
-  Serial.begin(9600);
-  Serial.setTimeout(50);
-  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+  Serial.begin(9600);     // вклчюаем общение по UART 
+  Serial.setTimeout(50);  // задаем время опроса быстрее, чем одна секунда по умолчанию 
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);  // обозначаем, сколько у нас светодиодов
 }
 
 void loop() {
-  
-  if (Serial.available() > 0)
+
+  if (Serial.available() > 0)  // если пришли данные в порт
   {
-    connection = true;
-    val = Serial.parseInt();
+    connection = true;  // включаем флаг, что данные приходили. 
+    val = Serial.parseInt(); // кладем в переменную прищедшее значение 
     //Serial.println(val);
-    if (val == 10)
+    if (val == 10) // если пришедшее значение 10 - выключаем светодиод
     {
-      leds[0] = CRGB::Black;
-      FastLED.show();
-      connection = false;
+      leds[0] = CRGB::Black; // меняем свойство цвета
+      FastLED.show(); // показываем новое свойство
+      connection = false; // флаг выключаем, показываеем специэффекты 
     }
-    if (val == 1)
+    if (val == 1) // если пришедшее значение 1 - включаем зеленый 
     {
-      leds[0] = CRGB::Green;
-      FastLED.show();
+      leds[0] = CRGB::Green; // меняем свойство цвета
+      FastLED.show();   // показываем новое свойство
     }
-    if (val == 2)
+    if (val == 2) // если пришедшее значение 2 - включаем красный 
     {
-      leds[0] = CRGB::Red;
-      FastLED.show();
+      leds[0] = CRGB::Red; // меняем свойство цвета
+      FastLED.show(); // показываем новое свойство
     }
 
-    if (val == 3)
+    if (val == 3) // если пришедшее значение 3 - включаем синий 
     {
-      leds[0] = CRGB::Blue;
-      FastLED.show();
+      leds[0] = CRGB::Blue; // меняем свойство цвета
+      FastLED.show();// показываем новое свойство
     }
   }
-   
-  if (!connection)
+
+  if (!connection)  // если нет входящих данных, показываем спецэффекты
   {
     cylon();
   }
