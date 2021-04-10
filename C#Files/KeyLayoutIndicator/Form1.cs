@@ -47,12 +47,20 @@ namespace KeyLayoutIndicator
 
         private void BConnect_Click(object sender, EventArgs e) // нажатие кнопки "подключить"
         {
-            currentPort = new SerialPort(CBComs.Text, 9600);    //создаем порт с названием из комбобокса и скорость 9600 бод
-            currentPort.DtrEnable = true;   // включаем индикатор готовности
-            currentPort.Open(); // открываем порт
-            labelSost.Text = "Подключен";
-            timer = new System.Threading.Timer(TimerTick, null, 1000, 300); // создаем и запускаем таймер
-            BConnect.Enabled = false; // делаем кнопку подключения неактивной
+
+            try //обработчик на случай отсутствующих, неправильных значений и др. ошибок подключения
+            {
+                currentPort = new SerialPort(CBComs.Text, 9600);    //создаем порт с названием из комбобокса и скорость 9600 бод
+                currentPort.DtrEnable = true;   // включаем индикатор готовности
+                currentPort.Open(); // открываем порт
+                labelSost.Text = "Подключен";
+                timer = new System.Threading.Timer(TimerTick, null, 1000, 300); // создаем и запускаем таймер
+                BConnect.Enabled = false; // делаем кнопку подключения неактивной
+            }
+            catch
+            {
+                labelSost.Text = "Ошибка открытия порта";
+            }
         }
 
         private void BDisconnect_Click(object sender, EventArgs e)
@@ -136,7 +144,7 @@ namespace KeyLayoutIndicator
             }
             catch
             {
-                if (!minimized) labelSost.Text = "Ошибка открытия порта";
+                if (!minimized) labelSost.Text = "Ошибка записи в порт";
             }
 
         }
