@@ -24,6 +24,7 @@ namespace KeyLayoutIndicator
         public Form1() // метод создания формы
         {
             InitializeComponent();
+            BDisconnect.Enabled = false; //отключаем кнопку отключения, дабы не разрывать несуществующее соединение
             this.Resize += new System.EventHandler(this.Form1_Resize);  // добавляем событие на изменение окна
             notifyIcon1.Visible = false;    // прячем иконку в трее, пока программа не свернута
             ComPortScan(); // сканируем список компортов и добавляем их в комбобокс
@@ -55,6 +56,7 @@ namespace KeyLayoutIndicator
                 currentPort.Open(); // открываем порт
                 labelSost.Text = "Подключен";
                 timer = new System.Threading.Timer(TimerTick, null, 1000, 300); // создаем и запускаем таймер
+                BDisconnect.Enabled = true; // отключение становится активно
                 BConnect.Enabled = false; // делаем кнопку подключения неактивной
             }
             catch
@@ -67,7 +69,8 @@ namespace KeyLayoutIndicator
         {
             currentPort.Close();    // закрываем порт
             labelSost.Text = "Отключен";
-            BConnect.Enabled = true; // делаем кнопку подключения неактивной
+            BConnect.Enabled = true; // делаем кнопку подключения активной
+            BDisconnect.Enabled = false; // отключение - наоборот 
         }
         private void Form1_Resize(object sender, EventArgs e)
         {
