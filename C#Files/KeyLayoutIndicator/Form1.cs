@@ -52,11 +52,11 @@ namespace KeyLayoutIndicator
 
             try //обработчик на случай отсутствующих, неправильных значений и др. ошибок подключения
             {
-                currentPort = new SerialPort(CBComs.Text, 9600);    //создаем порт с названием из комбобокса и скорость 9600 бод
+                currentPort = new SerialPort(CBComs.Text, 115200);    //создаем порт с названием из комбобокса и скорость 9600 бод
                 currentPort.DtrEnable = true;   // включаем индикатор готовности
                 currentPort.Open(); // открываем порт
                 labelSost.Text = "Подключен";
-                timer = new System.Threading.Timer(TimerTick, null, 1000, 300); // создаем и запускаем таймер
+                timer = new System.Threading.Timer(TimerTick, null, 500, 50); // создаем и запускаем таймер
                 BDisconnect.Enabled = true; // отключение становится активно
                 BConnect.Enabled = false; // делаем кнопку подключения неактивной
             }
@@ -109,12 +109,12 @@ namespace KeyLayoutIndicator
                 {
                     if (txt == "Русская")   // если имя русская
                     {
-                        PortWrite("1");     // пишем в порт зеленый цвет
+                        PortWrite("1,0,2,0,255,0,150;");     // пишем в порт зеленый цвет
                         lLangStatus.Text = "RU";    // пишем в лабель
                     }
                     else if (txt == "США")  // если имя раскладки США
                     {
-                        PortWrite("3");     // пишем в порт синий цвет
+                        PortWrite("1,0,2,0,0,250,150;");     // пишем в порт синий цвет
                         lLangStatus.Text = "EN";    // пишем в лабель
                     }
                     CurrentLayout = txt;    // запоминаем прошлую раскладку
@@ -145,34 +145,34 @@ namespace KeyLayoutIndicator
                 switch (currId)
                 {
                     case 1033:  //английский
-                        PortWrite("1");
+                        PortWrite("1,0,2,0,255,0,150;");
                         break;
                     case 1049:  //русский
-                        PortWrite("3");
+                        PortWrite("1,0,2,0,0,250,150;");
                         break;
                 }
             }
             bool caps = KeyboardLayoutTools.GetKeyS(Keys.CapsLock);
             if (caps != CurrentCaps)
             {
-                if (caps) PortWrite("21");
-                else PortWrite("20");
+                if (caps) PortWrite("1,3,3,0,0,255,150;");
+                else PortWrite("1,3,3,0,0,0,150;");
             }
             CurrentCaps = caps;
 
             bool num = KeyboardLayoutTools.GetKeyS(Keys.NumLock);
             if (num != CurrentNum)
             {
-                if (num) PortWrite("31");
-                else PortWrite("30");
+                if (num) PortWrite("1,4,4,0,0,255,150;");
+                else PortWrite("1,4,4,0,0,0,150;");
             }
             CurrentNum = num;
 
             bool scroll = KeyboardLayoutTools.GetKeyS(Keys.Scroll);
             if (scroll != CurrentScr)
             {
-                if (scroll) PortWrite("41");
-                else PortWrite("40");
+                if (scroll) PortWrite("1,5,5,0,0,255,150;");
+                else PortWrite("1,5,5,0,0,0,150;");
             }
             CurrentScr = scroll;
 
@@ -182,7 +182,7 @@ namespace KeyLayoutIndicator
         {
             try
             {
-                System.Threading.Thread.Sleep(100); // небольшая пауза, ведь SerialPort не терпит суеты
+                //System.Threading.Thread.Sleep(100); // небольшая пауза, ведь SerialPort не терпит суеты
                 currentPort.Write(txt);
             }
             catch
