@@ -33,6 +33,8 @@ namespace KeyLayoutIndicator
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.LCaps = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.BReScan = new System.Windows.Forms.Button();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.BDisconnect = new System.Windows.Forms.Button();
@@ -43,6 +45,10 @@ namespace KeyLayoutIndicator
             this.BConnect = new System.Windows.Forms.Button();
             this.CBComs = new System.Windows.Forms.ComboBox();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.LNum = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.LScr = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,6 +58,12 @@ namespace KeyLayoutIndicator
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.LScr);
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.LNum);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.LCaps);
+            this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.BReScan);
             this.groupBox1.Controls.Add(this.BDisconnect);
             this.groupBox1.Controls.Add(this.lLangStatus);
@@ -63,10 +75,28 @@ namespace KeyLayoutIndicator
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(154, 148);
+            this.groupBox1.Size = new System.Drawing.Size(153, 184);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Настройки";
+            // 
+            // LCaps
+            // 
+            this.LCaps.AutoSize = true;
+            this.LCaps.Location = new System.Drawing.Point(107, 129);
+            this.LCaps.Name = "LCaps";
+            this.LCaps.Size = new System.Drawing.Size(37, 13);
+            this.LCaps.TabIndex = 9;
+            this.LCaps.Text = "LCaps";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 129);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(91, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Состояние Caps:";
             // 
             // BReScan
             // 
@@ -98,7 +128,7 @@ namespace KeyLayoutIndicator
             // lLangStatus
             // 
             this.lLangStatus.AutoSize = true;
-            this.lLangStatus.Location = new System.Drawing.Point(79, 125);
+            this.lLangStatus.Location = new System.Drawing.Point(79, 116);
             this.lLangStatus.Name = "lLangStatus";
             this.lLangStatus.Size = new System.Drawing.Size(63, 13);
             this.lLangStatus.TabIndex = 5;
@@ -116,7 +146,7 @@ namespace KeyLayoutIndicator
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 125);
+            this.label2.Location = new System.Drawing.Point(12, 116);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 13);
             this.label2.TabIndex = 3;
@@ -156,11 +186,47 @@ namespace KeyLayoutIndicator
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
+            // LNum
+            // 
+            this.LNum.AutoSize = true;
+            this.LNum.Location = new System.Drawing.Point(107, 142);
+            this.LNum.Name = "LNum";
+            this.LNum.Size = new System.Drawing.Size(35, 13);
+            this.LNum.TabIndex = 11;
+            this.LNum.Text = "LNum";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(12, 142);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(89, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Состояние Num:";
+            // 
+            // LScr
+            // 
+            this.LScr.AutoSize = true;
+            this.LScr.Location = new System.Drawing.Point(107, 155);
+            this.LScr.Name = "LScr";
+            this.LScr.Size = new System.Drawing.Size(29, 13);
+            this.LScr.TabIndex = 13;
+            this.LScr.Text = "LScr";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(12, 155);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(83, 13);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "Состояние Scr:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(154, 148);
+            this.ClientSize = new System.Drawing.Size(153, 184);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -187,6 +253,12 @@ namespace KeyLayoutIndicator
         private System.Windows.Forms.Button BDisconnect;
         private System.Windows.Forms.Button BReScan;
         private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.Label LCaps;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label LScr;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label LNum;
+        private System.Windows.Forms.Label label5;
     }
 }
 

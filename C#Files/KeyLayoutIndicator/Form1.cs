@@ -18,6 +18,7 @@ namespace KeyLayoutIndicator
         // задаем переменные класса
         SerialPort currentPort;    // глобально объявляем используемы порт, т.к. будем обращаться из разных методов
         String CurrentLayout = ""; // переменная с текущей раскладкой
+        bool CurrentCaps = false, CurrentNum = false, CurrentScr = false; // переменные с текущими состояниями lock-ов
         bool minimized = false;    // переменная-флаг, содержащая инф-у о то, что окно свернуто
         System.Threading.Timer timer;   // создаем таймер 
 
@@ -119,9 +120,24 @@ namespace KeyLayoutIndicator
                     CurrentLayout = txt;    // запоминаем прошлую раскладку
                 }
             }
+            bool caps = KeyboardLayoutTools.GetKeyS(Keys.CapsLock);
+            if (caps) LCaps.Text = "Вкл";
+            else LCaps.Text = "Выкл";
+
+            bool num = KeyboardLayoutTools.GetKeyS(Keys.NumLock);
+            if (num) LNum.Text = "Вкл";
+            else LNum.Text = "Выкл";
+
+            bool scroll = KeyboardLayoutTools.GetKeyS(Keys.Scroll);
+            if (scroll) LScr.Text = "Вкл";
+            else LScr.Text = "Выкл";
+
+
         }
         void GetLayOut() // метод определения раскладки активного окна 
         {
+            bool changed = false;
+            int lks;
             IntPtr selectedWindow = KeyboardLayoutTools.NativeMethods.GetForegroundWindow(); // получаем id активного окна
             int currId;
             if (KeyboardLayoutTools.CheckKeyboardLayout(Handle, selectedWindow, out currId)) // функция, пишущая в указанную переменную currID раскладку, если она была изменена
@@ -136,6 +152,30 @@ namespace KeyLayoutIndicator
                         break;
                 }
             }
+            bool caps = KeyboardLayoutTools.GetKeyS(Keys.CapsLock);
+            if (caps != CurrentCaps)
+            {
+                if (caps) PortWrite("21");
+                else PortWrite("20");
+            }
+            CurrentCaps = caps;
+
+            bool num = KeyboardLayoutTools.GetKeyS(Keys.NumLock);
+            if (num != CurrentNum)
+            {
+                if (num) PortWrite("31");
+                else PortWrite("30");
+            }
+            CurrentNum = num;
+
+            bool scroll = KeyboardLayoutTools.GetKeyS(Keys.Scroll);
+            if (scroll != CurrentScr)
+            {
+                if (scroll) PortWrite("41");
+                else PortWrite("40");
+            }
+            CurrentScr = scroll;
+
         }
 
         void PortWrite(String txt) //функция записи переданного параметра в порт
@@ -190,8 +230,18 @@ namespace KeyLayoutIndicator
                     NativeMethods.ActivateKeyboardLayout(new IntPtr(1), 8); //активируем указанную раскладку клавиатуры
                     return true;    // возвращаем значение, что раскадка изменилась
                 }
+                NativeMethods.ActivateKeyboardLayout(new IntPtr(1), 8); //активируем указанную раскладку клавиатуры
             }
-            return false; //возращаем false, не переключаем на своей форме
+            return true; //всегда возвращаем true //возращаем false, не переключаем на своей форме
+        }
+
+        public static bool GetKeyS(Keys myKey) 
+        {
+            bool keyState;
+            int numState = NativeMethods.GetKeyState(myKey);
+            if (numState > 0) keyState = true;
+            else keyState = false;
+            return keyState;
         }
 
         #region Nested type: NativeMethods
@@ -221,6 +271,14 @@ namespace KeyLayoutIndicator
             /// 
             [DllImport("user32.dll")]
             public static extern int ActivateKeyboardLayout(IntPtr nkl, uint flags);
+
+            /// 
+            /// Получаем состояие клавиши.
+            ///
+            [DllImport("USER32.DLL")]
+            public static extern Int16 GetKeyState(Keys keys);
+
+
         }
 
         #endregion

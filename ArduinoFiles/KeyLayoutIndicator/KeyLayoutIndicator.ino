@@ -1,83 +1,82 @@
-// права на библиотеки принадлежат их правообладателям.
-// просто меняем цвет светодиода в зависимости от пришедшего значения
-// в простое - переливаемся цветами
-#include "FastLED.h" //подключаем бибилиотеку управления адресной лентой
-// можно было бы и просто светодиодиками поморгать, но я люблю эту ленту
-
-#define NUM_LEDS 1 // определяем кол-во светодиодов
-#define DATA_PIN 6 // определяем пин, к которому подключимся лентой
-
-CRGB leds[NUM_LEDS]; // создаем объект класса управления цветом согласно библеотеке ленты
-int val = 0; // переменная, где будем хранить значение пришедшее из ком-порта
-bool connection = false; // перменная-флаг, где будем отмечать событие, что передавались данные на ардуину. Иначе показываем эффект переливания.
-
+#include <Adafruit_NeoPixel.h>
+#define PIN        6
+#define NUMPIXELS 7
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+bool connection = false;
+int val;
 void setup()
 {
-  Serial.begin(9600);     // вклчюаем общение по UART 
-  Serial.setTimeout(50);  // задаем время опроса быстрее, чем одна секунда по умолчанию 
-  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);  // обозначаем, сколько у нас светодиодов
+  Serial.begin(9600);     // вклчюаем общение по UART
+  Serial.setTimeout(50);  // задаем время опроса быстрее, чем одна секунда по умолчанию
+  pixels.begin();
+  pixels.setBrightness(250);
 }
 
 void loop() {
 
   if (Serial.available() > 0)  // если пришли данные в порт
   {
-    connection = true;  // включаем флаг, что данные приходили. 
-    val = Serial.parseInt(); // кладем в переменную прищедшее значение 
+    connection = true;  // включаем флаг, что данные приходили.
+    val = Serial.parseInt(); // кладем в переменную прищедшее значение
     //Serial.println(val);
     if (val == 10) // если пришедшее значение 10 - выключаем светодиод
     {
-      leds[0] = CRGB::Black; // меняем свойство цвета
-      FastLED.show(); // показываем новое свойство
-      connection = false; // флаг выключаем, показываеем специэффекты 
+      pixels.clear(); // меняем свойство цвета
+
+      connection = false; // флаг выключаем, показываеем специэффекты
     }
-    if (val == 1) // если пришедшее значение 1 - включаем зеленый 
+    if (val == 1) // если пришедшее значение 1 - включаем зеленый
     {
-      leds[0] = CRGB::Green; // меняем свойство цвета
-      FastLED.show();   // показываем новое свойство
+      myShowAllColor(0, 250, 0);
     }
-    if (val == 2) // если пришедшее значение 2 - включаем красный 
+    if (val == 2) // если пришедшее значение 2 - включаем красный
     {
-      leds[0] = CRGB::Red; // меняем свойство цвета
-      FastLED.show(); // показываем новое свойство
+      myShowAllColor(250, 0, 0);
     }
 
-    if (val == 3) // если пришедшее значение 3 - включаем синий 
+    if (val == 3) // если пришедшее значение 3 - включаем синий
     {
-      leds[0] = CRGB::Blue; // меняем свойство цвета
-      FastLED.show();// показываем новое свойство
+      myShowAllColor(0, 0, 250);
     }
   }
 
   if (!connection)  // если нет входящих данных, показываем спецэффекты
   {
-    cylon();
+    rainbow(10);
   }
 
+
+
 }
-void cylon() //функция "переливания" цвета из стандартной библиотеки fastled
+
+void myShowAllColor(int R, int G, int B)
 {
-  static uint8_t hue = 0;
-  for (int i; i < 256; i++)
-    static uint8_t hue = 0;
-
-  for (int i = 0; i < NUM_LEDS; i++)
+  for (int i = 0; i < NUMPIXELS; i++)
   {
-    leds[i] = CHSV(hue++, 255, 255);
-    FastLED.show();
-    fadeall();
-    delay(10);
-  }
-  for (int i = (NUM_LEDS) - 1; i >= 0; i--) {
-    leds[i] = CHSV(hue++, 255, 255);
-    FastLED.show();
-    fadeall();
-    delay(10);
+    pixels.setPixelColor(i, pixels.Color(R, G, B));
+    pixels.show();
   }
 }
 
-void fadeall() {
-  for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i].nscale8(250);
+void rainbow(int wait) {
+  // Hue of first pixel runs 5 complete loops through the color wheel.
+  // Color wheel has a range of 65536 but it's OK if we roll over, so
+  // just count from 0 to 5*65536. Adding 256 to firstPixelHue each time
+  // means we'll make 5*65536/256 = 1280 passes through this outer loop:
+  for (long firstPixelHue = 0; firstPixelHue < 5 * 65536; firstPixelHue += 256) {
+    for (int i = 0; i < pixels.numPixels(); i++) { // For each pixel in strip...
+      // Offset pixel hue by an amount to make one full revolution of the
+      // color wheel (range of 65536) along the length of the strip
+      // (strip.numPixels() steps):
+      int pixelHue = firstPixelHue + (i * 65536L / pixels.numPixels());
+      // strip.ColorHSV() can take 1 or 3 arguments: a hue (0 to 65535) or
+      // optionally add saturation and value (brightness) (each 0 to 255).
+      // Here we're using just the single-argument hue variant. The result
+      // is passed through strip.gamma32() to provide 'truer' colors
+      // before assigning to each pixel:
+      pixels.setPixelColor(i, pixels.gamma32(pixels.ColorHSV(pixelHue)));
+    }
+    pixels.show(); // Update strip with new contents
+    delay(wait);  // Pause for a moment
   }
 }
