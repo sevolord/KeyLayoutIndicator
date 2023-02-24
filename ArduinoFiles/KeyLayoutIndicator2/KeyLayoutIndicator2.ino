@@ -1,6 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 #define PIN       6
-#define NUMPIXELS 7
+#define NUMPIXELS 5
+#define DEBUGSERIAL true
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 bool connection = false;
 int val;
@@ -9,7 +10,7 @@ void setup()
   Serial.begin(115200);     // вклчюаем общение по UART
   Serial.setTimeout(5);  // задаем время опроса быстрее, чем одна секунда по умолчанию
   pixels.begin();
-  pixels.setBrightness(50);
+  pixels.setBrightness(15);
 }
 
 void loop() {
@@ -32,21 +33,40 @@ void loop() {
       if (offset) offset++;         // если это не NULL - продолжаем
       else break;                   // иначе покидаем цикл
     }
-    //выводим инт буфер
-    for (int i = 0; i < count; i++) {
-      Serial.print(i);
-      Serial.print(": ");
-      Serial.println(data[i]);
+    if (DEBUGSERIAL)
+    {
+      //выводим инт буфер
+      for (int i = 0; i < count; i++) {
+        Serial.print(i);
+        Serial.print(": ");
+        Serial.println(data[i]);
+      }
     }
     //вид принимаемой строки: 1,2,3,4,5,6,7;
-    //где: 1 - тип параметра, 2 - первый светодиод обращения, 3 - последний светодиод обращения
-    //     4 - red, 5 - green, 6 - blue, 7 - Brightness 
+    //где: 1 - тип параметра, 2 - первый светодиод обращения, 3 - второй светодиод обращения
+    //     4 - третий, 5 - четвертый, 6 - пятый, 7 - Brightness 
     switch (data[0])
     {
-      case 1: // напр: 1,3,5,255,0,0,150; - красный цвет пикселов с 3 по 5, яркость 150 из 255
-        for (int j = data[1]; j <= data[2]; j++)
-          pixels.setPixelColor(j, pixels.Color(data[3], data[4], data[5]));
-        pixels.setBrightness(data[6]);
+      case 1: // адресная установка светодиодов
+        // for (int j = data[1]; j <= data[2]; j++)
+        //   pixels.setPixelColor(j, pixels.Color(data[3], data[4], data[5]));
+        pixels.clear();
+        // pixels.setBrightness(data[6]);
+        if (data[1]>0)        
+          pixels.setPixelColor(0, 255, 50, 0);  
+        if (data[2]>0)        
+          pixels.setPixelColor(1, 0, 50, 255);  
+        if (data[3]>0)        
+          pixels.setPixelColor(2, 255, 50, 255);  
+        if (data[4]>0)        
+          pixels.setPixelColor(3, 0, 50, 255);  
+        if (data[5]==1)        //язык английский
+          pixels.setPixelColor(4, 255, 255, 0);
+        else if (data[5]==0)  //русский 
+          pixels.setPixelColor(4, 0, 255, 50);
+        else if (data[5]==2)  //не удалось получить 
+          pixels.setPixelColor(4, 0, 0, 0);
+        pixels.setBrightness(data[6]);        
     }
     pixels.show();
   }

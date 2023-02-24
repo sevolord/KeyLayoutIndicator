@@ -21,6 +21,15 @@ namespace KeyLayoutIndicator
         bool CurrentCaps = false, CurrentNum = false, CurrentScr = false; // переменные с текущими состояниями lock-ов
         bool minimized = false;    // переменная-флаг, содержащая инф-у о то, что окно свернуто
         System.Threading.Timer timer;   // создаем таймер 
+        string oldDataString = "";
+        int defaultBrightness = 30; //яркость по умолчанию
+        int defaultMethod = 1;  
+        /*  метод 1, передача только состояния, без настроек:
+         * вид принимаемой строки: 1,2,3,4,5,6,7;
+         *  где: 1 - тип параметра, 2 - первый светодиод обращения, 3 - второй светодиод обращения
+         *  4 - третий, 5 - четвертый, 6 - пятый, 7 - Brightness 
+         */
+        int oldLang = 0; //для запоминания прошлой раскладки
 
         public Form1() // метод создания формы
         {
@@ -100,81 +109,93 @@ namespace KeyLayoutIndicator
         }
         void GetLayOutInForm() // метод получения раскладки, если активное окно - наша программа. не надо получать хэндл активного окна и вот это вот все
         {
-            InputLanguage myCurrentLanguage = InputLanguage.CurrentInputLanguage; // получаем активную раскладку клавиатуры
-            if (myCurrentLanguage != null) // если раскладка была получена
-            {
+            string dataString = "";
+            dataString += defaultMethod; dataString += ",";
+            // 1 - метод, 2 - ins, 3 - scroll, 4 - caps, 5 - num, 6 - lang, 7 - brigness
 
-                String txt = myCurrentLanguage.LayoutName; // получаем имя раскладки
-                if (CurrentLayout != txt)   // если раскладка изменилась
-                {
-                    if (txt == "Русская")   // если имя русская
-                    {
-                        PortWrite("1,0,2,0,255,0,150;");     // пишем в порт зеленый цвет
-                        lLangStatus.Text = "RU";    // пишем в лабель
-                    }
-                    else if (txt == "США")  // если имя раскладки США
-                    {
-                        PortWrite("1,0,2,0,0,250,150;");     // пишем в порт синий цвет
-                        lLangStatus.Text = "EN";    // пишем в лабель
-                    }
-                    CurrentLayout = txt;    // запоминаем прошлую раскладку
-                }
-            }
-            bool caps = KeyboardLayoutTools.GetKeyS(Keys.CapsLock);
-            if (caps) LCaps.Text = "Вкл";
-            else LCaps.Text = "Выкл";
-
-            bool num = KeyboardLayoutTools.GetKeyS(Keys.NumLock);
-            if (num) LNum.Text = "Вкл";
-            else LNum.Text = "Выкл";
+            bool ins = KeyboardLayoutTools.GetKeyS(Keys.Insert);
+            //if (ins) LCaps.Text = "Вкл";
+            //else LCaps.Text = "Выкл";
+            dataString += ins ? 1 : 0; dataString += ",";
 
             bool scroll = KeyboardLayoutTools.GetKeyS(Keys.Scroll);
             if (scroll) LScr.Text = "Вкл";
             else LScr.Text = "Выкл";
+            dataString += scroll ? 1 : 0; dataString += ",";
 
+            bool caps = KeyboardLayoutTools.GetKeyS(Keys.CapsLock);
+            if (caps) LCaps.Text = "Вкл";
+            else LCaps.Text = "Выкл";
+            dataString += caps ? 1 : 0; dataString += ",";
+
+            bool num = KeyboardLayoutTools.GetKeyS(Keys.NumLock);
+            if (num) LNum.Text = "Вкл";
+            else LNum.Text = "Выкл";
+            dataString += num ? 1 : 0; dataString += ",";
+            
+
+            InputLanguage myCurrentLanguage = InputLanguage.CurrentInputLanguage; // получаем активную раскладку клавиатуры
+            if (myCurrentLanguage != null) // если раскладка была получена
+            {
+                String txt = myCurrentLanguage.LayoutName; // получаем имя раскладки
+                if (txt == "Русская")   // если имя русская
+                {
+                    //PortWrite("1,0,2,0,255,0,150;");     // пишем в порт зеленый цвет
+                    lLangStatus.Text = "RU";    // пишем в лабель
+                    dataString += 0; dataString += ",";
+                }
+                else if (txt == "США")  // если имя раскладки США
+                {
+                    //PortWrite("1,0,2,0,0,250,150;");     // пишем в порт синий цвет
+                    lLangStatus.Text = "EN";    // пишем в лабель
+                    dataString += 1; dataString += ",";
+                }
+            }
+            dataString += defaultBrightness;
+            if (!oldDataString.Equals(dataString))
+            {
+                PortWrite(dataString);
+                oldDataString = dataString;
+            }
 
         }
         void GetLayOut() // метод определения раскладки активного окна 
         {
-            bool changed = false;
-            int lks;
+            string dataString = "";
+            dataString += defaultMethod; dataString += ",";
+            // 1 - метод, 2 - ins, 3 - scroll, 4 - caps, 5 - num, 6 - lang, 7 - brigness
+
+            bool ins = KeyboardLayoutTools.GetKeyS(Keys.Insert);
+            dataString += ins ? 1 : 0; dataString += ",";
+
+            bool scroll = KeyboardLayoutTools.GetKeyS(Keys.Scroll);
+            dataString += scroll ? 1 : 0; dataString += ",";
+
+            bool caps = KeyboardLayoutTools.GetKeyS(Keys.CapsLock);
+            dataString += caps ? 1 : 0; dataString += ",";
+
+            bool num = KeyboardLayoutTools.GetKeyS(Keys.NumLock);
+            dataString += num ? 1 : 0; dataString += ",";
+            
+
             IntPtr selectedWindow = KeyboardLayoutTools.NativeMethods.GetForegroundWindow(); // получаем id активного окна
             int currId;
             if (KeyboardLayoutTools.CheckKeyboardLayout(Handle, selectedWindow, out currId)) // функция, пишущая в указанную переменную currID раскладку, если она была изменена
             {
-                switch (currId)
-                {
-                    case 1033:  //английский
-                        PortWrite("1,0,2,0,255,0,150;");
-                        break;
-                    case 1049:  //русский
-                        PortWrite("1,0,2,0,0,250,150;");
-                        break;
-                }
+                int myIDLang = currId == 1033 ? 1 : 0;// английский 
+                oldLang = myIDLang;
             }
-            bool caps = KeyboardLayoutTools.GetKeyS(Keys.CapsLock);
-            if (caps != CurrentCaps)
+            else
             {
-                if (caps) PortWrite("1,3,3,0,0,255,150;");
-                else PortWrite("1,3,3,0,0,0,150;");
+                dataString += oldLang; dataString += ","; // не удалось получить язык, подсталяем что было
             }
-            CurrentCaps = caps;
 
-            bool num = KeyboardLayoutTools.GetKeyS(Keys.NumLock);
-            if (num != CurrentNum)
+            dataString += defaultBrightness;
+            if (!oldDataString.Equals(dataString)) 
             {
-                if (num) PortWrite("1,4,4,0,0,255,150;");
-                else PortWrite("1,4,4,0,0,0,150;");
+                PortWrite(dataString);
+                oldDataString = dataString;
             }
-            CurrentNum = num;
-
-            bool scroll = KeyboardLayoutTools.GetKeyS(Keys.Scroll);
-            if (scroll != CurrentScr)
-            {
-                if (scroll) PortWrite("1,5,5,0,0,255,150;");
-                else PortWrite("1,5,5,0,0,0,150;");
-            }
-            CurrentScr = scroll;
 
         }
 

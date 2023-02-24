@@ -1,15 +1,15 @@
 #include <Adafruit_NeoPixel.h>
 #define PIN        6
-#define NUMPIXELS 7
+#define NUMPIXELS 5
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 bool connection = false;
 int val;
 void setup()
 {
-  Serial.begin(9600);     // вклчюаем общение по UART
-  Serial.setTimeout(50);  // задаем время опроса быстрее, чем одна секунда по умолчанию
+  Serial.begin(115200);     // вклчюаем общение по UART
+  Serial.setTimeout(5);  // задаем время опроса быстрее, чем одна секунда по умолчанию
   pixels.begin();
-  pixels.setBrightness(250);
+  pixels.setBrightness(15);
 }
 
 void loop() {
@@ -76,7 +76,10 @@ void rainbow(int wait) {
       // before assigning to each pixel:
       pixels.setPixelColor(i, pixels.gamma32(pixels.ColorHSV(pixelHue)));
     }
+    if (Serial.available()) for (int y = 0; y < pixels.numPixels(); y++) pixels.setPixelColor(y, pixels.Color(0, 0, 0)); // если что-то пришло, все гасим
     pixels.show(); // Update strip with new contents
+    if (Serial.available()) break; // и прерываем
     delay(wait);  // Pause for a moment
   }
 }
+
